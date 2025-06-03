@@ -14,10 +14,7 @@ A comprehensive full-stack web application for managing employee performance rev
 - **Performance Review Workflow**: Create, submit, and approve performance reviews with detailed metrics.
 - **Goal Management System**: Set, track, and update employee goals with progress visualization.
 - **Email Notifications**: Automated email notifications for review and goal updates.
-- **Data Visualization**: Interactive charts for performance.
-
-System: and goal progress using Chart.js.
-
+- **Data Visualization**: Interactive charts for performance and goal progress using Chart.js.
 - **Responsive Design**: Modern, user-friendly UI with CSS Grid and Flexbox.
 - **RESTful APIs**: Comprehensive endpoints for employee, performance, and goal management.
 
