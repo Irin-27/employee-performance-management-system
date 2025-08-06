@@ -9,7 +9,7 @@ const API_BASE_URL = 'http://localhost:8080/api';
 axios.defaults.baseURL = API_BASE_URL;
 
 // Mock mode for development when backend is not available
-const MOCK_MODE = true; // Set to false when backend is working
+const MOCK_MODE = false; // Set to false when backend is working
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
