@@ -60,18 +60,26 @@
     
     <!-- Database -->
     <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- Keep MySQL for production (optional) -->
+    <dependency>
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
       <scope>runtime</scope>
+      <optional>true</optional>
     </dependency>
     
-    <!-- Development Tools -->
+    <!-- Development Tools - DISABLED FOR STABILITY
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
       <scope>runtime</scope>
       <optional>true</optional>
     </dependency>
+    -->
     
     <!-- Lombok -->
     <dependency>

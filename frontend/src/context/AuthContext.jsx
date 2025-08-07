@@ -8,6 +8,9 @@ const AuthContext = createContext();
 const API_BASE_URL = 'http://localhost:8080/api';
 axios.defaults.baseURL = API_BASE_URL;
 
+// Mock mode for development when backend is not available
+const MOCK_MODE = false; // Set to false when backend is working
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -23,8 +26,25 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Mock user data for development
+  const mockUser = {
+    id: 1,
+    email: 'demo@company.com',
+    firstName: 'Demo',
+    lastName: 'User',
+    role: 'EMPLOYEE',
+    employeeId: 'EMP001',
+    department: 'IT',
+    jobTitle: 'Software Developer'
+  };
+
   // Set up axios interceptors
   useEffect(() => {
+    if (MOCK_MODE) {
+      setLoading(false);
+      return;
+    }
+
     // Request interceptor to add token to headers
     const requestInterceptor = axios.interceptors.request.use(
       (config) => {
@@ -86,6 +106,12 @@ export const AuthProvider = ({ children }) => {
   // Check if user is logged in on app start
   useEffect(() => {
     const initializeAuth = async () => {
+      if (MOCK_MODE) {
+        // In mock mode, just set loading to false
+        setLoading(false);
+        return;
+      }
+
       if (token) {
         try {
           const response = await axios.get('/auth/me');
@@ -105,6 +131,28 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
+
+      if (MOCK_MODE) {
+        // Mock login logic
+        if (email && password) {
+          const mockToken = 'mock-jwt-token';
+          const mockRefreshToken = 'mock-refresh-token';
+          
+          setToken(mockToken);
+          setRefreshToken(mockRefreshToken);
+          setUser(mockUser);
+
+          // Store tokens in localStorage
+          localStorage.setItem('accessToken', mockToken);
+          localStorage.setItem('refreshToken', mockRefreshToken);
+
+          return { success: true, user: mockUser };
+        } else {
+          const errorMessage = 'Please enter email and password';
+          setError(errorMessage);
+          return { success: false, error: errorMessage };
+        }
+      }
 
       const response = await axios.post('/auth/login', {
         email,
@@ -141,14 +189,21 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
 
-    // Optional: Call logout endpoint
-    axios.post('/auth/logout').catch(console.error);
+    if (!MOCK_MODE) {
+      // Optional: Call logout endpoint
+      axios.post('/auth/logout').catch(console.error);
+    }
   };
 
   const register = async (userData) => {
     try {
       setLoading(true);
       setError(null);
+
+      if (MOCK_MODE) {
+        // Mock registration
+        return { success: true, data: { message: 'Registration successful (mock)' } };
+      }
 
       const response = await axios.post('/auth/register', userData);
       return { success: true, data: response.data.data };
@@ -165,6 +220,10 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
+
+      if (MOCK_MODE) {
+        return { success: true };
+      }
 
       await axios.put('/auth/change-password', {
         currentPassword,
@@ -183,6 +242,10 @@ export const AuthProvider = ({ children }) => {
 
   const updateUser = async () => {
     try {
+      if (MOCK_MODE) {
+        return mockUser;
+      }
+
       const response = await axios.get('/auth/me');
       setUser(response.data.data);
       return response.data.data;
@@ -193,6 +256,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const isAuthenticated = () => {
+    if (MOCK_MODE) {
+      return !!token && !!user;
+    }
     return !!token && !!user;
   };
 
@@ -217,7 +283,8 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated,
     hasRole,
     hasAnyRole,
-    setError
+    setError,
+    mockMode: MOCK_MODE
   };
 
   return (
